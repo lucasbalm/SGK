@@ -55,77 +55,79 @@ function base64_decode(base64str, file) {
 function kairos_recog(url) {
 
     var params = {
-        image: url,
-        gallery_name: 'smartdoor'
-    };
+	  image: url,
+	  gallery_name: 'smartdoor'
+	};
 
-    kairosClient.recognize(params) // return Promise 
-        //  result: { 
-        //    status: <http status code>, 
-        //    body: <data> 
-        //  } 
-        .then(function(result) {
-                console.log("Inside then");
-                //console.log(result.body['images'][0]);
-                console.log(result.body['images'][0]['transaction']['status']);
+	kairosClient.recognize(params)   // return Promise 
+	  //  result: { 
+	  //    status: <http status code>, 
+	  //    body: <data> 
+	  //  } 
+	  .then(function(result) {
+	  	console.log("Inside then");
+	  	//console.log(result.body['images'][0]);
+	  	console.log(result.body['images'][0]['transaction']['status']);
 
-                // check if status is success
-                if (result.body['images'][0]['transaction']['status'] == "success") {
+	  	// check if status is success
+	  	if(result.body['images'][0]['transaction']['status']=="success"){
+	  		
+			// check the confidence
+			var resultado = result.body['images'][0]['transaction']['confidence'];
+	  		console.log(result.body['images'][0]['transaction']['confidence']);
+				if(resultado>0.60){
+		  		client.publish('Result','Access Granted');
+	  		}
+	  		else {
+	  			client.publish('Result','Sorry, Try Again');
+	  		}
+	  	}
 
-                    // check the confidence
-                    var resultado = result.body['images'][0]['transaction']['confidence'];
-                    console.log(result.body['images'][0]['transaction']['confidence']);
-                    if (resultado > 0.60) {
-                        //	client.publish('Result','Access Granted');
-                        //}
-                        //else {
-                        //	client.publish('Result','Sorry, Try Again');
-                        //}
-                    }
+	  	// If status failure, send a push notification (with the image)
+	  	else {
+		  	console.log("Inside failure, sending push notification");
+		  	
+		  	client.publish('Result','Wait, calling owner..');
 
-                    // If status failure, send a push notification (with the image)
-                    else {
-                        console.log("Inside failure, sending push notification");
+		  	// create a message with some given values 
+			var message = new gcm.Message({
+			  collapseKey: 'demo',
+			  priority: 'high',
+			  contentAvailable: true,
+			  delayWhileIdle: false,
+			  data: {
+			    'key1': url,
+				'title': "New Message",
+			    'icon': "ic_launcher",
+			    'body': "Notice: Someone's at the door, Please accept or deny it."			    
+			  }
+			});
 
-                        client.publish('Result', 'Wait, calling owner..');
+		  	// Send the message, trying only once
+			sender.sendNoRetry(message, { registrationTokens: regTokens }, function(err, response) {
+			  if(err){
+			    console.log("Inside err");
+			    console.error(err);
+			  }  
+			  else {
+			    console.log("Inside response");
+			    console.log(response);
+			  }  
+			});
 
-                        // create a message with some given values 
-                        var message = new gcm.Message({
-                            collapseKey: 'demo',
-                            priority: 'high',
-                            contentAvailable: true,
-                            delayWhileIdle: false,
-                            data: {
-                                'key1': url,
-                                'title': "New Message",
-                                'icon': "ic_launcher",
-                                'body': "Notice: Someone's at the door, Please accept or deny it."
-                            }
-                        });
+	  	}
 
-                        // Send the message, trying only once
-                        sender.sendNoRetry(message, { registrationTokens: regTokens }, function(err, response) {
-                            if (err) {
-                                console.log("Inside err");
-                                console.error(err);
-                            } else {
-                                console.log("Inside response");
-                                console.log(response);
-                            }
-                        });
+	  })
+	  // err -> array: jsonschema validate errors 
+	  //        or throw Error 
+	  .catch(function(err) {
+	  	console.log("Inside err");
+	  	console.log(err);
 
-                    }
+	  	// Ask to take the picture again
+	  	client.publish('Result','Take pic again');
 
-                })
-            // err -> array: jsonschema validate errors 
-            //        or throw Error 
-            .catch(function(err) {
-                console.log("Inside err");
-                console.log(err);
+	  });
 
-                // Ask to take the picture again
-                client.publish('Result', 'Take pic again');
+}
 
-            });
-
-        }
