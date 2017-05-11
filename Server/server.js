@@ -73,12 +73,12 @@ function kairos_recog(url) {
 			// check the confidence
 			var resultado = result.body['images'][0]['transaction']['confidence'];
 	  		console.log(result.body['images'][0]['transaction']['confidence']);
-			if(resultado>0.60){
-		  	//	client.publish('Result','Access Granted');
-	  		//}
-	  		//else {
-	  		//	client.publish('Result','Sorry, Try Again');
-	  		//}
+				if(resultado>0.60){
+		  		client.publish('Result','Access Granted');
+	  		}
+	  		else {
+	  			client.publish('Result','Sorry, Try Again');
+	  		}
 	  	}
 
 	  	// If status failure, send a push notification (with the image)
