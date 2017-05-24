@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/Imageprev"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop = "40dp"/>
+
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center|bottom"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        >
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:layout_width="150dp"
+            android:layout_height="fill_parent"
+            android:text="Accept"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:id="@+id/btnReject"
+            android:layout_width="150dp"
+            android:layout_height="fill_parent"
+            android:text="Reject"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+</LinearLayout>

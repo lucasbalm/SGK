@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "824217929011",
+    "project_id": "smartdoorbell-5a286"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824217929011:android:f8e8356e90d7e4dd",
+        "android_client_info": {
+          "package_name": "com.example.edward.smartdoorbell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD123NKtGtKi8-0D6l4CbOG0Z9WifN1RQE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
