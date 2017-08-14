@@ -1,7 +1,7 @@
 var fs = require('fs');
 var mqtt = require('mqtt');
 var cloudinary = require('cloudinary');
-var client = mqtt.connect('mqtt://localhost:8099');
+var client = mqtt.connect('mqtt://localhost:1883');
 var Kairos = require('kairos-api');
 var kairosClient = new Kairos('516d4a8b', '0933f0e94aca51e12a7419458247be49');
 var gcm = require('node-gcm');
