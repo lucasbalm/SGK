@@ -24,9 +24,6 @@ cloudinary.config({
     api_secret: 'ItvczwBrlix4mM1c6jGcDMeWTQM'
 });
 
-//tonho viado
-console.log("tonho viado");
-
 client.on('message', function(topic, message) {
     // message is Buffer 
     if (topic == "camera") {
