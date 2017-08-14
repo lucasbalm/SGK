@@ -128,3 +128,6 @@ function kairos_recog(url) {
 
 }
 
+console.log("TÁ RODANDO PORRA!")
+
+
