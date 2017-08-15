@@ -5,6 +5,9 @@ var client = mqtt.connect('mqtt://localhost:1883');
 var Kairos = require('kairos-api');
 var kairosClient = new Kairos('516d4a8b', '0933f0e94aca51e12a7419458247be49');
 var gcm = require('node-gcm');
+const telegramBot = require('node-telegram-bot-api')
+
+const telegramToken = `402730709:AAHHpm5YRBw1VzFxuu9ULK1cPYPnDAEZUQM`
 
 // the registration tokens of the devices you want to send to
 var regTokens = ['cHzCdwsr4Ug:APA91bFZzEy50XfLMMs85unpGtQxcplf_2QU9993Mou2fc_-DMZ9L3iE1e5kGRFc9qTdfevXTUY0iT2p2XI2FBHrIAGtuwAH8TQmCxAmCoVcPcYmstzfdUdXMFXSqD0_5jAqpeFmR3wx'];
@@ -12,17 +15,38 @@ var regTokens = ['cHzCdwsr4Ug:APA91bFZzEy50XfLMMs85unpGtQxcplf_2QU9993Mou2fc_-DM
 // Set up the sender with you API key 
 var url;
 var sender = new gcm.Sender('AIzaSyAxiXpu6KK4qvLk02xJT4k3Zkwr5K45-C0');
+const bot = new telegramBot( telegramToken, { polling: true } )
 
 client.on('connect', function() {
     console.log('Connected to Mosq');
     client.subscribe('camera');
 });
 
+
+//Comando para liberar o Acesso pelo telegram digitando "/open"/
+bot.onText( /\/open/, (msg) => {
+	bot.sendMessage(msg.chat.id, "Acesso Liberado")
+	  .then(() => {
+		  console.log('Success', msg);
+		  client.publish('Result','Access Granted');	
+	  })
+      .catch(() => { 
+		  console.log("Erro")
+	  });	
+});
+
+
 cloudinary.config({
     cloud_name: 'makssie',
     api_key: '337679993513188',
     api_secret: 'ItvczwBrlix4mM1c6jGcDMeWTQM'
 });
+
+
+bot.on('message', function(msg){
+  console.log('msg', msg)
+})
+
 
 client.on('message', function(topic, message) {
     // message is Buffer 
