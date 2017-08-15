@@ -87,7 +87,7 @@ function kairos_recog(url,userName, callback) {
 
 
 app.listen(3000,function(){
-  console.log("Started on PORT 3000");
+  console.log("app.js started on http://localhost:3000");
 })
 
 

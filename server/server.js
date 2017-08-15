@@ -18,7 +18,7 @@ var sender = new gcm.Sender('AIzaSyAxiXpu6KK4qvLk02xJT4k3Zkwr5K45-C0');
 const bot = new telegramBot( telegramToken, { polling: true } )
 
 client.on('connect', function() {
-    console.log('Connected to Mosq');
+    console.log('Conectado ao MQTT Broker em http://localhost:1883');
     client.subscribe('camera');
 });
 
@@ -152,6 +152,6 @@ function kairos_recog(url) {
 
 }
 
-console.log("TÁ RODANDO PORRA!")
+console.log("server.js started on localhost")
 
 
