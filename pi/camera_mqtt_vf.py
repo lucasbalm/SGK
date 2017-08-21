@@ -48,7 +48,7 @@ def on_message(mosq, obj, msg):
       sender.sendDecimal(400,24)
     elif res == "Take pic again" :
       sender.sendDecimal(500,24)
-      print "Inside Take Pic"
+      print "Tirando foto novamente ..."
 
 client = mqtt.Client()
 client.on_message = on_message
@@ -60,7 +60,7 @@ client.connect("52.67.104.98", 1883,60)
 
 # Continue the network loop
 client.loop_start()
-print "Started"
+print "Iniciado"
 
 GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
@@ -69,20 +69,20 @@ try:
         input_state = GPIO.input(18)
         if input_state == True:
             
-            print('Button Pressed. Taking picture')
+            print('Botão pressionado. Tirando foto ...')
             camera = picamera.PiCamera()
             camera.start_preview()
             sleep(1) #Camera needs some time to warm up
             camera.capture('photo1.jpg', resize=(800,800))
             camera.stop_preview()
             camera.close()
-            print('Sending photo to cloud')
+            print('Enviando foto ...')
  
             f = open('photo1.jpg', 'rb')
             fileContent = f.read()
             byteArr = bytearray(fileContent)
             client.publish("camera", byteArr, 0)
-            sleep(5000)
+            sleep(5000) #Para teste sem botão
 
 finally:
     GPIO.cleanup()
