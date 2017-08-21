@@ -6,6 +6,7 @@ var Kairos = require('kairos-api');
 var kairosClient = new Kairos('516d4a8b', '0933f0e94aca51e12a7419458247be49');
 var gcm = require('node-gcm');
 var httpRequest = require('request');
+var access = require('../server/access.json');
 const telegramBot = require('node-telegram-bot-api')
 const telegramToken = `402730709:AAHHpm5YRBw1VzFxuu9ULK1cPYPnDAEZUQM`
 // the registration tokens of the devices you want to send to
@@ -44,6 +45,7 @@ bot.onText(/\/open/, (msg) => {
 let isOnRegisterMode = false;
 
 bot.onText(/\/register/, (msg) => {
+	const chatId = msg.chat.id;
 	if (isOnRegisterMode === false) {
 	bot.sendMessage(msg.chat.id, "Poste uma foto sua")
 	isOnRegisterMode = true;
@@ -60,6 +62,14 @@ bot.onText(/\/register/, (msg) => {
 			const fileId = result[result.length - 1].file_id;
 			bot.getFile(fileId).then((data) => {
 				const filePath = data.file_path;
+				let json = {
+										"username" : `${userName}`,
+										"chatId": `${chatId}`
+									}
+				const stringJson = JSON.stringify(json);			
+				fs.writeFile("access.json", stringJson, (error) => {});
+				const teste = JSON.parse(access); 
+				console.log(teste[0]);
 				const urlImage = `https://api.telegram.org/file/bot${telegramToken}/${filePath}`;
 				httpRequest(urlImage, {
 					encoding: 'binary'
@@ -120,7 +130,7 @@ function kairos_recogNewUser(url,userName, callback) {
 }
 
 client.on('message', function (topic, message) {
-	// message is Buffer 
+	console.log("Topic", topic)
 	if (topic == "camera") {
 		var base64data = new Buffer(message).toString('base64');
 		base64_decode(base64data, 'match.jpg');
@@ -171,6 +181,7 @@ function kairos_recog(url) {
 					client.publish('Result', 'Access Granted');
 				} else {
 					client.publish('Result', 'Sorry, Try Again');
+					bot.sendFile(access.chatId, resultado.url);
 				}
 			}
 
