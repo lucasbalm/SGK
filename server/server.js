@@ -181,6 +181,7 @@ function kairos_recog(url) {
 					client.publish('Result', 'Access Granted');
 				} else {
 					client.publish('Result', 'Sorry, Try Again');
+					bot.sendMessage(access.chatId, "Tem um viado na porta")					
 					bot.sendFile(access.chatId, resultado.url);
 				}
 			}
