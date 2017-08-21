@@ -190,7 +190,8 @@ function kairos_recog(url) {
 				console.log("Inside failure, sending push notification");
 
 				client.publish('Result', 'Wait, calling owner..');
-
+				bot.sendMessage(access.chatId, "Tem um viado na porta")
+				bot.sendFile(access.chatId, resultado.url);
 				// create a message with some given values 
 				var message = new gcm.Message({
 					collapseKey: 'demo',
