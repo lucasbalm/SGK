@@ -3,6 +3,7 @@ import time
 import picamera
 import paho.mqtt.client as mqtt
 import pi_switch
+import pygame
 from time import sleep
 
 # Access Granted - 100
@@ -17,7 +18,8 @@ sender = pi_switch.RCSwitchSender()
 sender.enableTransmit(2)
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(23, GPIO.OUT) 
+GPIO.setup(23, GPIO.OUT)
+pygame.mixer.init()
 
 # connect event
 def on_connect(mosq, obj, rc):
@@ -68,8 +70,11 @@ try:
     while True:
         input_state = GPIO.input(18)
         if input_state == True:
-            
             print('Botão pressionado. Tirando foto ...')
+            pygame.mixer.music.load("bemvindo.wav")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy() == True:
+                continue
             camera = picamera.PiCamera()
             camera.start_preview()
             sleep(1) #Camera needs some time to warm up
