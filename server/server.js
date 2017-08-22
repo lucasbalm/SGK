@@ -69,10 +69,12 @@ bot.onText(/\/register/, (msg) => {
 				const stringJson = JSON.stringify(json);			
 				fs.writeFile("access.json", stringJson, (error) => {});
 				const urlImage = `https://api.telegram.org/file/bot${telegramToken}/${filePath}`;
+				console.log(urlImage);
 				httpRequest(urlImage, {
 					encoding: 'binary'
 				}, function (error, response, body) {
-					fs.writeFile('downloaded.jpg', body, 'binary', function (err) {});
+					console.log("Entrou aqui");
+					fs.writeFile('downloaded.jpg', body, 'binary', function (err) { console.log( "Deu erro") });
 					cloudinaryUpload(userName)
 				});
 			});
