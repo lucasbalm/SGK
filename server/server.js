@@ -170,7 +170,7 @@ function kairos_recog(url) {
 			console.log("Inside then");
 			//console.log(result.body['images'][0]);
 			console.log(result.body['images'][0]['transaction']['status']);
-
+			const url = result.body['images'][0]['transaction']['url']; 
 			// check if status is success
 			if (result.body['images'][0]['transaction']['status'] == "success") {
 
