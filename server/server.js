@@ -183,7 +183,7 @@ function kairos_recog(url) {
 				} else {
 					client.publish('Result', 'Sorry, Try Again');
 					bot.sendMessage(access.chatId, "Tem um viado na porta")					
-					bot.sendFile(access.chatId, result.body.uploaded_image_url);
+					bot.sendPhoto(access.chatId, result.body.uploaded_image_url);
 				}
 			}
 
@@ -193,7 +193,7 @@ function kairos_recog(url) {
 
 				client.publish('Result', 'Wait, calling owner..');
 				bot.sendMessage(access.chatId, "Tem um viado na porta")
-				bot.sendFile(access.chatId, result.body.uploaded_image_url);
+				bot.sendPhoto(access.chatId, result.body.uploaded_image_url);
 				// create a message with some given values 
 				var message = new gcm.Message({
 					collapseKey: 'demo',
