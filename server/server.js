@@ -47,85 +47,89 @@ let isOnRegisterMode = false;
 bot.onText(/\/register/, (msg) => {
 	const chatId = msg.chat.id;
 	if (isOnRegisterMode === false) {
-	bot.sendMessage(msg.chat.id, "Poste uma foto sua")
-	isOnRegisterMode = true;
-	bot.on('message', function (msg) {
-		const userName = msg.chat.username;
-		//Verifica se uma imagem foi enviada enviada
-		if (msg.photo != undefined) {
-			var objArray = msg.photo;
-			var result = objArray.map((item) => {
-				const size = Object.keys(msg.photo).length
-				return msg.photo[ size - 1];
-			});
-			//Pega o Id do File para que possa salvar no local
-			const fileId = result[result.length - 1].file_id;
-			bot.getFile(fileId).then((data) => {
-				const filePath = data.file_path;
-				let json = {
-										"username" : `${userName}`,
-										"chatId": `${chatId}`
-									}
-				const stringJson = JSON.stringify(json);			
-				fs.writeFile("access.json", stringJson, (error) => {});
-				const urlImage = `https://api.telegram.org/file/bot${telegramToken}/${filePath}`;
-				console.log(urlImage);
-				httpRequest(urlImage, {
-					encoding: 'binary'
-				}, function (error, response, body) {
-					console.log("Entrou aqui");
-					fs.writeFile('downloaded.jpg', body, 'binary', function (err) { console.log( "Deu erro") });
-					cloudinaryUpload(userName)
+		bot.sendMessage(msg.chat.id, "Poste uma foto sua")
+		isOnRegisterMode = true;
+		bot.on('message', function (msg) {
+			const userName = msg.chat.username;
+			//Verifica se uma imagem foi enviada enviada
+			if (msg.photo != undefined) {
+				var objArray = msg.photo;
+				var result = objArray.map((item) => {
+					const size = Object.keys(msg.photo).length
+					return msg.photo[size - 1];
 				});
-			});
-			isOnRegisterMode = false;
-			bot.off('message');
-		} else if (msg.text === '/cancel') {
-			bot.sendMessage(msg.chat.id, "Registro Cancelado");
-			isOnRegisterMode = false;
-			bot.off('message');
-		} else {
-			bot.sendMessage(msg.chat.id, "Por favor envie a foto ou digite /cancel para cancelar");
-		}
-	})
+				//Pega o Id do File para que possa salvar no local
+				const fileId = result[result.length - 1].file_id;
+				bot.getFile(fileId).then((data) => {
+					const filePath = data.file_path;
+					// const json = {
+					// 						"username" : `${userName}`,
+					// 						"chatId": `${chatId}`
+					// 					}
+					// const stringJson = JSON.stringify(json);
+
+					// fs.writeFile("access.json", stringJson, function () { console.log("Sucesso")});
+					const urlImage = `https://api.telegram.org/file/bot${telegramToken}/${filePath}`;
+					httpRequest(urlImage, {
+						encoding: 'binary'
+					}, function (error, response, body) {
+						fs.writeFile('access.json', `{"username" : "${userName}","chatId": ${chatId}}`, () => {
+							console.log("Teste")
+							fs.writeFile('downloaded.jpg', body, 'binary', function (err) {
+								cloudinaryUpload(userName)
+							});
+						});
+
+					});
+				});
+				isOnRegisterMode = false;
+				bot.off('message');
+			} else if (msg.text === '/cancel') {
+				bot.sendMessage(msg.chat.id, "Registro Cancelado");
+				isOnRegisterMode = false;
+				bot.off('message');
+			} else {
+				bot.sendMessage(msg.chat.id, "Por favor envie a foto ou digite /cancel para cancelar");
+			}
+		})
 	}
 })
 
 
-function cloudinaryUpload(username) {
-	cloudinary.uploader.upload("downloaded.jpg", function (result) {
+function cloudinaryUpload(userName) {
+	cloudinary.v2.uploader.upload("downloaded.jpg", function (error, result) {
 		console.log(result);
-		url = result.url;
-		kairos_recogNewUser(url, username, function () {
+		let url = result.url;
+		kairos_recogNewUser(url, userName, function () {
 			console.log("success"); //Ou response.send
 		});
 	});
 }
 
-function kairos_recogNewUser(url,userName, callback) {
+function kairos_recogNewUser(url, userName, callback) {
 
-  var params = {
-    image: url,
-    subject_id: userName,
-    gallery_name: 'smartdoor',
-    selector: 'SETPOSE'
-  };
+	var params = {
+		image: url,
+		subject_id: userName,
+		gallery_name: 'smartdoor',
+		selector: 'SETPOSE'
+	};
 
-  kairosClient.enroll(params)   
-    .then(function(result) {
-      console.log("Inside then");
-      console.log(result.status);      
+	kairosClient.enroll(params)
+		.then(function (result) {
+			console.log("Inside then");
+			console.log(result.status);
 			console.log('------------------------------------');
 			console.log(result);
 			console.log('------------------------------------');
 			callback();
-    })
-    // err -> array: jsonschema validate errors 
-    //        or throw Error 
-    .catch(function(err) {
-      console.log("Inside err");
-      console.log(err);
-    });
+		})
+		// err -> array: jsonschema validate errors 
+		//        or throw Error 
+		.catch(function (err) {
+			console.log("Inside err");
+			console.log(err);
+		});
 
 }
 
@@ -182,7 +186,7 @@ function kairos_recog(url) {
 					client.publish('Result', 'Access Granted');
 				} else {
 					client.publish('Result', 'Sorry, Try Again');
-					bot.sendMessage(access.chatId, "Quer abrir a porta para essa pessoa? Digite /open para abrir, e /cancel para não")					
+					bot.sendMessage(access.chatId, "Quer abrir a porta para essa pessoa? Digite /open para abrir, e /cancel para não")
 					bot.sendPhoto(access.chatId, result.body.uploaded_image_url);
 				}
 			}
