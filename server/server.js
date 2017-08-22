@@ -68,7 +68,6 @@ bot.onText(/\/register/, (msg) => {
 									}
 				const stringJson = JSON.stringify(json);			
 				fs.writeFile("access.json", stringJson, (error) => {});
-				const teste = JSON.parse(access); 
 				const urlImage = `https://api.telegram.org/file/bot${telegramToken}/${filePath}`;
 				httpRequest(urlImage, {
 					encoding: 'binary'
