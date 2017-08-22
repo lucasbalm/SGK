@@ -182,57 +182,24 @@ function kairos_recog(url) {
 					client.publish('Result', 'Access Granted');
 				} else {
 					client.publish('Result', 'Sorry, Try Again');
-					bot.sendMessage(access.chatId, "Tem um viado na porta")					
+					bot.sendMessage(access.chatId, "Quer abrir a porta para essa pessoa? Digite /open para abrir, e /cancel para não")					
 					bot.sendPhoto(access.chatId, result.body.uploaded_image_url);
 				}
 			}
 
 			// If status failure, send a push notification (with the image)
 			else {
-				console.log("Inside failure, sending push notification");
-
+				console.log("Inside failure, sending telegram message");
 				client.publish('Result', 'Wait, calling owner..');
-				bot.sendMessage(access.chatId, "Tem um viado na porta")
+				bot.sendMessage(access.chatId, "Quer abrir a porta para essa pessoa? Digite /open para abrir, e /cancel para não")
 				bot.sendPhoto(access.chatId, result.body.uploaded_image_url);
-				// create a message with some given values 
-				var message = new gcm.Message({
-					collapseKey: 'demo',
-					priority: 'high',
-					contentAvailable: true,
-					delayWhileIdle: false,
-					data: {
-						'key1': url,
-						'title': "New Message",
-						'icon': "ic_launcher",
-						'body': "Notice: Someone's at the door, Please accept or deny it."
-					}
-				});
-
-				// Send the message, trying only once
-				sender.sendNoRetry(message, {
-					registrationTokens: regTokens
-				}, function (err, response) {
-					if (err) {
-						console.log("Inside err");
-						console.error(err);
-					} else {
-						console.log("Inside response");
-						console.log(response);
-					}
-				});
-
 			}
 
 		})
-		// err -> array: jsonschema validate errors 
-		//        or throw Error 
 		.catch(function (err) {
 			console.log("Inside err");
 			console.log(err);
-
-			// Ask to take the picture again
 			client.publish('Result', 'Take pic again');
-
 		});
 
 }
