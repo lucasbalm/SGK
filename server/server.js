@@ -7,7 +7,9 @@ var kairosClient = new Kairos('516d4a8b', '0933f0e94aca51e12a7419458247be49');
 var gcm = require('node-gcm');
 var httpRequest = require('request');
 var access = require('../server/access.json');
-const telegramBot = require('node-telegram-bot-api')
+const telegramBot = require('node-telegram-bot-api');
+const im = require('imagemagick');
+const gm = require('gm').subClass({imageMagick: true});
 const telegramToken = `402730709:AAHHpm5YRBw1VzFxuu9ULK1cPYPnDAEZUQM`
 // the registration tokens of the devices you want to send to
 var regTokens = ['cHzCdwsr4Ug:APA91bFZzEy50XfLMMs85unpGtQxcplf_2QU9993Mou2fc_-DMZ9L3iE1e5kGRFc9qTdfevXTUY0iT2p2XI2FBHrIAGtuwAH8TQmCxAmCoVcPcYmstzfdUdXMFXSqD0_5jAqpeFmR3wx'];
@@ -73,8 +75,14 @@ fs.writeFileSync("access.json", stringJson);
 				httpRequest(urlImage, {
 					encoding: 'binary'
 				}, function (error, response, body) {
-					fs.writeFile('downloaded.jpg', body, 'binary', function (err) {});
-					cloudinaryUpload(userName)
+					fs.writeFileSync('downloaded.jpg', body, 'binary', function (err) {});
+					gm('downloaded.jpg')
+					.resize(800, 800, '!')
+					.write('resized.jpg', function (err) {
+						if (!err) 
+						console.log('done');
+						cloudinaryUpload(userName);						
+					});
 				});
 			});
 			isOnRegisterMode = false;
@@ -90,9 +98,8 @@ fs.writeFileSync("access.json", stringJson);
 	}
 })
 
-
 function cloudinaryUpload(username) {
-	cloudinary.uploader.upload("downloaded.jpg", function (result) {
+	cloudinary.uploader.upload("resized.jpg", function (result) {
 		console.log(result);
 		url = result.url;
 		kairos_recogNewUser(url, username, function () {
