@@ -144,7 +144,7 @@ bot.onText(/\/makeadmin (.*)/, response(function* (msg, matches) {
 }));
 
 function cloudinaryUpload(username) {
-	cloudinary.uploader.upload("resized.jpg", function (result) {
+	cloudinary.uploader.upload("downloaded.jpg", function (result) {
 		console.log(result);
 		url = result.url;
 		kairos_recogNewUser(url, username, function () {
