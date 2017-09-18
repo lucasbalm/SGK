@@ -4,19 +4,22 @@ var cloudinary = require('cloudinary');
 var client = mqtt.connect('mqtt://localhost:1883');
 var Kairos = require('kairos-api');
 var kairosClient = new Kairos('516d4a8b', '0933f0e94aca51e12a7419458247be49');
-var gcm = require('node-gcm');
 var httpRequest = require('request');
 var access = require('../server/access.json');
 const telegramBot = require('node-telegram-bot-api');
 const im = require('imagemagick');
 const gm = require('gm').subClass({imageMagick: true});
 const telegramToken = `402730709:AAHHpm5YRBw1VzFxuu9ULK1cPYPnDAEZUQM`
-// the registration tokens of the devices you want to send to
-var regTokens = ['cHzCdwsr4Ug:APA91bFZzEy50XfLMMs85unpGtQxcplf_2QU9993Mou2fc_-DMZ9L3iE1e5kGRFc9qTdfevXTUY0iT2p2XI2FBHrIAGtuwAH8TQmCxAmCoVcPcYmstzfdUdXMFXSqD0_5jAqpeFmR3wx'];
+
+const use = require('node-telegram-bot-api-middleware').use;
+const simpleauth = require('node-telegram-bot-api-middleware-simpleauth').createMiddleware();
+const response = use(simpleauth);
+
+const becomeAdminCode = 'a2888';
+
 
 // Set up the sender with you API key 
 var url;
-var sender = new gcm.Sender('AIzaSyAxiXpu6KK4qvLk02xJT4k3Zkwr5K45-C0');
 const bot = new telegramBot(telegramToken, {
 	polling: true
 })
@@ -32,8 +35,23 @@ client.on('connect', function () {
 	client.subscribe('camera');
 });
 
+// Registered users only will be able to get through this middleware
+const onlyAuth = response.use(function* () {
+  if (!this.simpleauth.isUserAuthenticated()) {
+    yield bot.sendMessage(this.chatId, 'Você não possui permissão para usar este comando');
+    this.stop();
+  }
+});
+
+// Using this for messages that are only for admin
+const onlyAdmin = onlyAuth.use(function* () {
+  if (!this.simpleauth.isCurrentUserAdmin()) {
+    yield bot.sendMessage(this.chatId, 'You are not authorised to do this');
+  }
+});
+
 //Comando para liberar o Acesso pelo telegram digitando "/open"/
-bot.onText(/\/open/, (msg) => {
+bot.onText(/\/open/, onlyAuth((msg) => {
 	bot.sendMessage(msg.chat.id, "Liberando Acesso")
 		.then(() => {
 			client.publish('Result', 'Access Granted');
@@ -42,7 +60,7 @@ bot.onText(/\/open/, (msg) => {
 		.catch(() => {
 			console.log("Erro")
 		});
-});
+}));
 
 let isOnRegisterMode = false;
 
@@ -97,6 +115,33 @@ fs.writeFileSync("access.json", stringJson);
 	})
 	}
 })
+
+bot.onText(/\/makeadmin (.*)/, response(function* (msg, matches) {
+  if (!this.simpleauth.isUserAuthenticated()) {
+    // Registering admin
+    if (becomeAdminCode === matches[1]) {
+      const code = yield this.simpleauth.generateAuthCode();
+
+      yield this.simpleauth.registerCurrentTelegramUserWithCodeAsync(code);
+
+      yield this.simpleauth.makeCurrentUserAdminAsync();
+    } else {
+      bot.sendMessage(this.chatId, 'Invalid code for becoming an admin');
+
+      return;
+    }
+  } else {
+    if (this.simpleauth.isCurrentUserAdmin()) {
+      bot.sendMessage(this.chatId, 'You are already admin');
+
+      return;
+    }
+
+    yield this.simpleauth.makeCurrentUserAdminAsync();
+  }
+
+  bot.sendMessage(this.chatId, 'You are now admin');
+}));
 
 function cloudinaryUpload(username) {
 	cloudinary.uploader.upload("resized.jpg", function (result) {
