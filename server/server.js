@@ -64,7 +64,7 @@ bot.onText(/\/open/, onlyAuth((msg) => {
 
 let isOnRegisterMode = false;
 
-bot.onText(/\/register/, (msg) => {
+bot.onText(/\/register/, onlyAuth((msg) => {
 const userName = msg.chat.username;
 const chatId = msg.chat.id;
 const json = {
@@ -114,7 +114,7 @@ fs.writeFileSync("access.json", stringJson);
 		}
 	})
 	}
-})
+}));
 
 bot.onText(/\/makeadmin (.*)/, response(function* (msg, matches) {
   if (!this.simpleauth.isUserAuthenticated()) {
