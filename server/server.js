@@ -183,14 +183,6 @@ bot.onText(/\/delete (.*)/, onlyAuth((msg, matches) => {
 
 bot.onText(/\/takepicture/, onlyAuth((msg) => {
 	client.publish('Result', 'Picture');	
-	client.on('message', function (topic, message) {
-		console.log("Topic", topic)
-		if (topic == "picture") {
-			var base64data = new Buffer(message).toString('base64');
-			base64_decode(base64data, 'realtime.jpg');
-		}
-		bot.sendPhoto(access.chatId, 'realtime.jpg');		
-	});
 }))
 
 function cloudinaryUpload(username) {
@@ -235,6 +227,11 @@ client.on('message', function (topic, message) {
 	if (topic == "camera") {
 		var base64data = new Buffer(message).toString('base64');
 		base64_decode(base64data, 'match.jpg');
+	}
+	if (topic == "picture") {
+		var base64data = new Buffer(message).toString('base64');
+		base64_decode(base64data, 'realtime.jpg');
+		bot.sendPhoto(access.chatId, 'realtime.jpg');				
 	}
 
 });
