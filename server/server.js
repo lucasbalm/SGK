@@ -35,6 +35,7 @@ cloudinary.config({
 client.on('connect', function () {
 	console.log('Conectado ao MQTT Broker em http://localhost:1883');
 	client.subscribe('camera');
+	client.subscribe('picture');
 });
 
 // Registered users only will be able to get through this middleware
@@ -183,6 +184,14 @@ bot.onText(/\/delete (.*)/, onlyAuth((msg, matches) => {
 
 bot.onText(/\/takepicture/, onlyAuth((msg) => {
 	client.publish('Result', 'Picture');	
+	client.on('message', function (topic, message) {
+		console.log("Topic", topic)
+		if (topic == "picture") {
+			var base64data = new Buffer(message).toString('base64');
+			base64_decode(base64data, 'realtime.jpg');
+		}
+		bot.sendPhoto(msg.chat.id, 'realtime.jpg');		
+	});
 }))
 
 function cloudinaryUpload(username) {
@@ -227,11 +236,6 @@ client.on('message', function (topic, message) {
 	if (topic == "camera") {
 		var base64data = new Buffer(message).toString('base64');
 		base64_decode(base64data, 'match.jpg');
-	}
-	if (topic == "picture") {
-		var base64data = new Buffer(message).toString('base64');
-		base64_decode(base64data, 'realtime.jpg');
-		bot.sendPhoto(access.chatId, 'realtime.jpg');				
 	}
 
 });
