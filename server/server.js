@@ -183,16 +183,18 @@ bot.onText(/\/delete (.*)/, onlyAuth((msg, matches) => {
 }));
 
 bot.onText(/\/takepicture/, onlyAuth((msg) => {
-	client.publish('Result', 'Picture');	
+	client.publish('Result', 'Picture').then(() => {	
 	client.on('message', function (topic, message) {
 		console.log("Topic", topic)
 		if (topic == "picture") {
 			var base64data = new Buffer(message).toString('base64');
 			base64_decode(base64data, 'realtime.jpg', 'takepicture');
 		}
-		bot.sendPhoto(msg.chat.id, 'realtime.jpg');
-		bot.off('message');			
+		bot.sendPhoto(msg.chat.id, 'realtime.jpg').then(() => {
+			bot.off('message');						
+		});
 	});
+});
 }))
 
 function cloudinaryUpload(username) {
