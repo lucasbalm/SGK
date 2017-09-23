@@ -189,10 +189,9 @@ bot.onText(/\/takepicture/, onlyAuth((msg) => {
 		if (topic == "picture") {
 			var base64data = new Buffer(message).toString('base64');
 			base64_decode(base64data, 'realtime.jpg', 'takepicture');
+			bot.sendPhoto(msg.chat.id, 'realtime.jpg');			
 		}
-		bot.sendPhoto(msg.chat.id, 'realtime.jpg').then(()=>{
-			bot.off('message')
-		});
+		bot.off('message');			
 	});
 }))
 
