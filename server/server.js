@@ -190,9 +190,9 @@ bot.onText(/\/takepicture/, onlyAuth((msg) => {
 			var base64data = new Buffer(message).toString('base64');
 			base64_decode(base64data, 'realtime.jpg', 'takepicture');
 		}
-		bot.sendPhoto(msg.chat.id, 'realtime.jpg');	
+		bot.sendPhoto(msg.chat.id, 'realtime.jpg');
+		bot.off('message');			
 	});
-		bot.off('message');	
 }))
 
 function cloudinaryUpload(username) {
