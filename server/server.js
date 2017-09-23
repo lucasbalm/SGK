@@ -188,7 +188,7 @@ bot.onText(/\/takepicture/, onlyAuth((msg) => {
 		console.log("Topic", topic)
 		if (topic == "picture") {
 			var base64data = new Buffer(message).toString('base64');
-			base64_decode(base64data, 'realtime.jpg');
+			base64_decode(base64data, 'realtime.jpg', 'takepicture');
 		}
 		bot.sendPhoto(msg.chat.id, 'realtime.jpg');	
 	});
@@ -236,25 +236,26 @@ client.on('message', function (topic, message) {
 	console.log("Topic", topic)
 	if (topic == "camera") {
 		var base64data = new Buffer(message).toString('base64');
-		base64_decode(base64data, 'match.jpg');
+		base64_decode(base64data, 'match.jpg', 'recognize');
 	}
 
 });
 
 // function to create file from base64 encoded string and upload to cloudinary
-function base64_decode(base64str, file) {
+function base64_decode(base64str, file, command) {
 	// create buffer object from base64 encoded string, it is important to tell the constructor that the string is base64 encoded
 	var bitmap = new Buffer(base64str, 'base64');
 	// write buffer to file
 	fs.writeFileSync(file, bitmap);
 	console.log('******** File created from base64 encoded string ********');
-
+if(command == "recognize"){
 	// upload image to cloudinary
 	cloudinary.uploader.upload("match.jpg", function (result) {
 		console.log(result.url);
 		url = result.url;
 		kairos_recog(url);
 	});
+}
 }
 
 function kairos_recog(url) {
