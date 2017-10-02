@@ -15,7 +15,6 @@ from time import sleep
 # Take pic again - 500
 
 res = ""
-ringflag = True #True = tocar campainha / False = não tocar campainha
 
 sender = pi_switch.RCSwitchSender()
 sender.enableTransmit(2)
@@ -52,11 +51,9 @@ def on_message(mosq, obj, msg):
         playsound("acess_granted.wav",True)
         time.sleep(5)
         GPIO.output(23, 0)
-        ringflag = True
-        
+                
     elif res == "Access Denied" :
         sender.sendDecimal(200,24)
-        ringflag = True
         playsound("acess_denied.wav",True)
     elif res == "Sorry, Try Again" :
         sender.sendDecimal(300,24)
@@ -102,9 +99,7 @@ try:
     while True:
         input_state = GPIO.input(18)
         if input_state == False:
-            if(ringflag == True):
-                playsound("ringbell.wav", False)
-                ringflag = False
+            playsound("ringbell.wav", False)
             print('Botão pressionado. Tirando foto ...')
             camera = picamera.PiCamera()
             camera.start_preview()
