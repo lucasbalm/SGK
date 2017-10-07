@@ -11,7 +11,7 @@ const im = require('imagemagick');
 const gm = require('gm').subClass({
 	imageMagick: true
 });
-const telegramToken = `402730709:AAHHpm5YRBw1VzFxuu9ULK1cPYPnDAEZUQM`
+const telegramToken = `455492999:AAGH2gedX846_heXw_lH-ges7VCgcbwY2F8`
 
 const use = require('node-telegram-bot-api-middleware').use;
 const simpleauth = require('node-telegram-bot-api-middleware-simpleauth').createMiddleware();
