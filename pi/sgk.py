@@ -48,33 +48,33 @@ def on_message(mosq, obj, msg):
     if res == "Access Granted" :
         sender.sendDecimal(100,24)
         GPIO.output(23, 1)
-        playsound("acess_granted.wav",True)
+        playsound("/home/pi/SGK/pi/acess_granted.wav",True)
         time.sleep(5)
         GPIO.output(23, 0)
                 
     elif res == "Access Denied" :
         sender.sendDecimal(200,24)
-        playsound("acess_denied.wav",True)
+        playsound("/home/pi/SGK/pi/acess_denied.wav",True)
     elif res == "Sorry, Try Again" :
         sender.sendDecimal(300,24)
-        playsound("norecog.wav",True)
+        playsound("/home/pi/SGK/pi/norecog.wav",True)
     elif res == "Wait, calling owner.." :
         sender.sendDecimal(400,24)
-        playsound("calling_owner.wav",True)
+        playsound("/home/pi/SGK/pi/calling_owner.wav",True)
     elif res == "Take pic again" :
         sender.sendDecimal(500,24)
         print "Tire a foto novamente"
-        playsound("takepic_again.wav",True)
+        playsound("/home/pi/SGK/pi/takepic_again.wav",True)
     elif res == "Picture" :
         print "Tirando foto da porta"
         camera = picamera.PiCamera()
         camera.start_preview()
         sleep(1) #Camera needs some time to warm up
-        camera.capture('photo2.jpg', resize=(800,800))
+        camera.capture('/home/pi/SGK/pi/photo2.jpg', resize=(800,800))
         camera.stop_preview()
         camera.close()
         print('Enviando foto ...')
-        f = open('photo2.jpg', 'rb')
+        f = open('/home/pi/SGK/pi/photo2.jpg', 'rb')
         fileContent = f.read()
         byteArr = bytearray(fileContent)
         client.publish("picture", byteArr, 0)
@@ -99,17 +99,17 @@ try:
     while True:
         input_state = GPIO.input(18)
         if input_state == False:
-            playsound("ringbell.wav", False)
+            playsound("/home/pi/SGK/pi/ringbell.wav", False)
             print('Botão pressionado. Tirando foto ...')
             camera = picamera.PiCamera()
             camera.start_preview()
             sleep(1) #Camera needs some time to warm up
-            camera.capture('photo1.jpg', resize=(800,800))
+            camera.capture('/home/pi/SGK/pi/photo1.jpg', resize=(800,800))
             camera.stop_preview()
             camera.close()
             print('Enviando foto ...')
  
-            f = open('photo1.jpg', 'rb')
+            f = open('/home/pi/SGK/pi/photo1.jpg', 'rb')
             fileContent = f.read()
             byteArr = bytearray(fileContent)
             client.publish("camera", byteArr, 0)
