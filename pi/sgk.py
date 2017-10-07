@@ -19,8 +19,6 @@ res = ""
 sender = pi_switch.RCSwitchSender()
 sender.enableTransmit(2)
 
-deb = False
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.OUT)
 pygame.mixer.init()
@@ -54,28 +52,28 @@ def on_message(mosq, obj, msg):
         time.sleep(5)
         GPIO.output(23, 0)        
         time.sleep(5)
-        deb = False        
+
     elif res == "Access Denied" :
         sender.sendDecimal(200,24)
         playsound("/home/pi/SGK/pi/acess_denied.wav",True)
         time.sleep(5)
-        deb = False 
+
     elif res == "Sorry, Try Again" :
         sender.sendDecimal(300,24)
         playsound("/home/pi/SGK/pi/norecog.wav",True)
         time.sleep(5)
-        deb = False 
+
     elif res == "Wait, calling owner.." :
         sender.sendDecimal(400,24)
         playsound("/home/pi/SGK/pi/calling_owner.wav",True)
         time.sleep(5)
-        deb = False 
+
     elif res == "Take pic again" :
         sender.sendDecimal(500,24)
         print "Tire a foto novamente"
         playsound("/home/pi/SGK/pi/takepic_again.wav",True)
         time.sleep(5)
-        deb = False 
+
     elif res == "Picture" :
         print "Tirando foto da porta"
         camera = picamera.PiCamera()
@@ -91,7 +89,7 @@ def on_message(mosq, obj, msg):
         client.publish("picture", byteArr, 0)
         print('Foto enviada')
         time.sleep(5)
-        deb = False 
+
         
 
 client = mqtt.Client()
@@ -111,9 +109,7 @@ GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 try:
     while True:
         input_state = GPIO.input(18)
-        if deb == False:
-            if input_state == False:
-                deb = True
+        if input_state == False:
                 playsound("/home/pi/SGK/pi/ringbell.wav", False)
                 print('Botão pressionado. Tirando foto ...')
                 camera = picamera.PiCamera()
@@ -128,5 +124,6 @@ try:
                 fileContent = f.read()
                 byteArr = bytearray(fileContent)
                 client.publish("camera", byteArr, 0)
+                sleep(30)
 finally:
     GPIO.cleanup()
