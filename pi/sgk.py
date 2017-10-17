@@ -20,7 +20,12 @@ sender = pi_switch.RCSwitchSender()
 sender.enableTransmit(2)
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
 GPIO.setup(23, GPIO.OUT)
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(18, GPIO.FALLING, callback=on_ring, bouncetime=200)  # add rising edge detection on a channel
+
 pygame.mixer.init()
 
 def playsound(sound, waitsound):
@@ -104,26 +109,25 @@ client.connect("52.67.104.98", 1883,60)
 client.loop_start()
 print "Iniciado"
 
-GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+def on_ring():
+    playsound("/home/pi/SGK/pi/ringbell.wav", False)
+    print('Botão pressionado. Tirando foto ...')
+    camera = picamera.PiCamera()
+    camera.start_preview()
+    sleep(1) #Camera needs some time to warm up
+    camera.capture('/home/pi/SGK/pi/photo1.jpg', resize=(800,800))
+    camera.stop_preview()
+    camera.close()
+    print('Enviando foto ...')
+    f = open('/home/pi/SGK/pi/photo1.jpg', 'rb')
+    fileContent = f.read()
+    byteArr = bytearray(fileContent)
+    client.publish("camera", byteArr, 0)
 
 try:
-    while True:
-        input_state = GPIO.input(18)
-        if input_state == False:
-                playsound("/home/pi/SGK/pi/ringbell.wav", False)
-                print('Botão pressionado. Tirando foto ...')
-                camera = picamera.PiCamera()
-                camera.start_preview()
-                sleep(1) #Camera needs some time to warm up
-                camera.capture('/home/pi/SGK/pi/photo1.jpg', resize=(800,800))
-                camera.stop_preview()
-                camera.close()
-                print('Enviando foto ...')
-     
-                f = open('/home/pi/SGK/pi/photo1.jpg', 'rb')
-                fileContent = f.read()
-                byteArr = bytearray(fileContent)
-                client.publish("camera", byteArr, 0)
-                sleep(30)
+    GPIO.wait_for_edge(18, GPIO.FALLING) 
+    print('falling edge detected on pin 18!')
+            
 finally:
     GPIO.cleanup()
+GPIO.cleanup()
