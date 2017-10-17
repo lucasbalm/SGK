@@ -8,6 +8,7 @@ import pi_switch
 import pygame
 from time import sleep
 
+
 # Access Granted - 100 - Foto reconhecida com acc > 60%
 # Access Denied - 200 - 
 # Sorry, Try Again - 300
@@ -124,6 +125,8 @@ try:
                 fileContent = f.read()
                 byteArr = bytearray(fileContent)
                 client.publish("camera", byteArr, 0)
-                sleep(30)
+                sleep(50)
+
+                
 finally:
     GPIO.cleanup()
